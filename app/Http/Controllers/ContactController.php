@@ -36,20 +36,21 @@ class ContactController extends Controller
 
 
         $orgData = $request->only(['nom_org', 'adresse', 'code_postal', 'ville', 'statut']);
-        $contactData['nom_org'] = ucfirst($orgData['nom_org']);
-        $contactData['ville'] = ucfirst($orgData['ville']);
+        $orgData['nom_org'] = ucfirst($orgData['nom_org']);
+        $orgData['ville'] = ucfirst($orgData['ville']);
         $orgData['cle'] = bin2hex(random_bytes(16));
         $orgData['active'] = 1;
         $org = Organisation::create($orgData);
 
         $contactData = $request->only(['nom', 'prenom', 'email', 'telephone_fixe', 'service', 'fonction']);
+
         $contactData['nom'] = ucfirst($contactData['nom']);
         $contactData['prenom'] = ucfirst($contactData['prenom']);
         $contactData['email'] = strtolower($contactData['email']);
         $contactData['organisation_id'] = $org->id;
         $contactData['cle'] = bin2hex(random_bytes(16));
         $contactData['active'] = 1;
-        Contact::create($contactData);  
+        Contact::create($contactData);
         return Redirect::route('contacts.index');
     }
 
@@ -106,6 +107,6 @@ class ContactController extends Controller
     {
         $contact = Contact::findOrFail($id);
         $contact->delete();
-        return Redirect::route('contacts.index');        
+        return Redirect::route('contacts.index');
     }
 }

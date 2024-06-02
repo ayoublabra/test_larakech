@@ -154,6 +154,13 @@
                 icon: 'error',
                 confirmButtonText: 'Ok'
             });
+        } else if (!validateCP(code_postal)) {
+            Swal.fire({
+                title: 'Error!',
+                text: "Le code postal doitcontenir seulement des lettres et nombre de chiffre max 5.",
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            });
         } else {
             //verification de existance
             axios.post('/verification', {
@@ -207,6 +214,9 @@
     };
     const validateNomOrg = (nom_org) => {
         return /^[a-zA-Z0-9\s]+$/.test(nom_org);
+    };
+    const validateCP = (cp) => {
+        return /^[0-9]{4,5}$/.test(cp);
     };
 
     </script>
