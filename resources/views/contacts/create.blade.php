@@ -103,10 +103,6 @@
 
     <script>
         $(document).ready(function () {
-            let contactExist=false;
-
-            // let table = new DataTable('#myTable');
-            let organisations =[];
             let nom ='';
             let prenom ='';
             let email ='';
