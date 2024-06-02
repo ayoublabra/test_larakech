@@ -1,5 +1,5 @@
 @extends('layouts.master')
-@section('title', 'Add new car')
+@section('title', 'Ajouter un contact')
 @section('content')
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
@@ -55,7 +55,7 @@
                             <div class="row g-3">
                                 <div class="col xs-0">
                                     <label for="code_postal" class="form-label">Code Postal</label>
-                                    <input type="text" id="code_postal" name="code_postal" class="form-control" placeholder="Entrer le code postal" />
+                                    <input type="text" id="code_postal" name="code_postal" class="form-control" placeholder="Entrer le code postal" maxlength="5"/>
                                 </div>
                                 <div class="col mb-0">
                                     <label for="ville" class="form-label">Ville</label>
@@ -89,9 +89,9 @@
                         </form>
                     <br>
                     <button id="add" style="margin-left: 92%" class="btn btn-primary">Ajouter</button>
-                        
+
             </div>
-            
+
         </div>
     </div>
     </div>
@@ -117,8 +117,8 @@
             let code_postal ='';
             let ville='';
             let nom_org='';
-           
-            
+
+
         });
     $("#add").click(function(){
         nom=$("#nom").val();
@@ -151,40 +151,52 @@
                 icon: 'error',
                 confirmButtonText: 'Ok'
             });
-        }
-        //verification de existance
-        axios.post('/verification', {
+        }else if(!validateNomOrg(nom_org)) {
+            Swal.fire({
+                title: 'Error!',
+                text: "Le nom d'entrprise seulement des lettres et des chiffres.",
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            });
+        } else {
+            //verification de existance
+            axios.post('/verification', {
                 nom_org: nom_org,
                 nom:nom,
                 prenom:prenom
-            }).then(response => {
-                if (response.data.organisationExist) {
-                    Swal.fire({
-                        title: 'Erreur!',
-                        text: response.data.msgOrganisation,
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
-                    });
-                }else if (response.data.contactExist) {
-                    Swal.fire({
-                        title: 'Erreur!',
-                        text: response.data.msgContact,
-                        icon: 'error',
-                        confirmButtonText: 'Ok'
-                    });
-                }else if (!response.data.contactExist && !response.data.organisationExist) {
-                    var form = document.getElementById("addContactForm");
+                }).then(response => {
+                    if (response.data.organisationExist) {
+                        Swal.fire({
+                            title: 'Erreur!',
+                            text: response.data.msgOrganisation,
+                            icon: 'error',
+                            confirmButtonText: 'Ok'
+                        });
+                    }else if (response.data.contactExist) {
+                        Swal.fire({
+                                title: response.data.msgContact,
+                                icon: 'error',
+                                showCancelButton: true,
+                                confirmButtonText: "Ajouter",
+                                cancelButtonText:"annuler"
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    var form = document.getElementById("addContactForm");
+                                    form.submit();
+                                }
+                            });
+                    }else if (!response.data.contactExist && !response.data.organisationExist) {
+                        var form = document.getElementById("addContactForm");
+                        form.submit();
+                    }
 
-                    // Soumettre le formulaire
-                    form.submit();
-                }
-                
-            })
-            .catch(error => {
-                console.log(error);
-        });
-        
-        
+                }).catch(error => {
+                    console.log(error);
+            });
+        }
+
+
+
     });
     const validateEmail = (email) => {
         return email.match(
@@ -196,6 +208,9 @@
     };
     const validatePrenom = (prenom) => {
         return /^[a-zA-Z\s]+$/.test(prenom);
+    };
+    const validateNomOrg = (nom_org) => {
+        return /^[a-zA-Z0-9\s]+$/.test(nom_org);
     };
 
     </script>

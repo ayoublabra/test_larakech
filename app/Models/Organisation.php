@@ -19,7 +19,6 @@ class Organisation extends Model
         'ville',
         'statut',
         'active'
-
     ];
         /**
      * The attributes that should be mutated to dates.
